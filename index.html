@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🚩 श्री राम नवमी - शिवनेरी विद्यालय</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Khand:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+
+<style>
+:root{
+    --maroon:#660000;
+    --saffron:#ff6600;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#fdfbfb,#ebedee);
+    margin:0;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+h1{
+    color:var(--maroon);
+    font-family:'Khand';
+}
+
+/* Glass UI */
+.container{
+    max-width:1100px;
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    gap:30px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(12px);
+    padding:30px;
+    border-radius:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.2);
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:2px solid #eee;
+    margin-top:5px;
+}
+
+button{
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.btn-main{background:var(--maroon);color:white;}
+.btn-whatsapp{background:#25D366;color:white;}
+
+canvas{
+    border-radius:15px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* Crop Modal */
+#cropModal{
+    display:none;
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.85);
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+#cropModal img{
+    max-width:300px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚩 राम नवमी उत्सव 🚩</h1>
+
+<div class="container">
+
+<div>
+
+<label>नाव</label>
+<input type="text" id="name" oninput="drawPoster()">
+
+<label>विद्यार्थी ओळ</label>
+<input type="text" id="tagline" value="मी मराठी शाळेचा विद्यार्थी" oninput="drawPoster()">
+
+<label>शाळा</label>
+<input type="text" id="school" value="शिवनेरी विद्यालय धोलवड, ता.जुन्नर, जि.पुणे" oninput="drawPoster()">
+
+<label>संस्था</label>
+<input type="text" id="org" value="ग्रामशिक्षण सेवा मंडळ, धोलवड" oninput="drawPoster()">
+
+<label>फोटो</label>
+<input type="file" id="photo">
+
+<button class="btn-main" onclick="download()">📥 डाउनलोड</button>
+<button class="btn-whatsapp" onclick="share()">📲 WhatsApp</button>
+
+</div>
+
+<div>
+<canvas id="canvas" width="1080" height="1920" style="width:350px"></canvas>
+</div>
+
+</div>
+
+<!-- Cropper -->
+<div id="cropModal">
+<img id="cropImg">
+<br>
+<button onclick="cropImage()">Use Photo</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let cropper;
+let userImage=null;
+
+// Background
+const bg=new Image();
+bg.crossOrigin="anonymous";
+bg.src="ram.png"; // keep your local image or URL
+bg.onload=drawPoster;
+
+// Left Logo
+const logo=new Image();
+logo.crossOrigin="anonymous";
+logo.src="school.jpg";
+
+// RIGHT Shivaji Logo
+const shivajiLogo=new Image();
+shivajiLogo.crossOrigin="anonymous";
+shivajiLogo.src="https://coreldrawdesign.com/resources/previews/preview-shivaji-maharaj-png-with-fort-and-flag-background-1739789498.webp";
+
+// Upload + Crop
+document.getElementById("photo").addEventListener("change",(e)=>{
+    const reader=new FileReader();
+    reader.onload=(event)=>{
+        document.getElementById("cropImg").src=event.target.result;
+        document.getElementById("cropModal").style.display="flex";
+
+        if(cropper) cropper.destroy();
+        cropper=new Cropper(document.getElementById("cropImg"),{
+            aspectRatio:1,
+            viewMode:1
+        });
+    };
+    reader.readAsDataURL(e.target.files[0]);
+});
+
+function cropImage(){
+    const croppedCanvas=cropper.getCroppedCanvas({width:600,height:600});
+    userImage=new Image();
+    userImage.src=croppedCanvas.toDataURL();
+
+    userImage.onload=()=>{
+        document.getElementById("cropModal").style.display="none";
+        drawPoster();
+    };
+}
+
+function drawPoster(){
+
+    const name=document.getElementById("name").value || "तुमचे नाव";
+    const tagline=document.getElementById("tagline").value;
+    const school=document.getElementById("school").value;
+    const org=document.getElementById("org").value;
+
+    ctx.clearRect(0,0,1080,1920);
+
+    ctx.drawImage(bg,0,0,1080,1920);
+
+    ctx.fillStyle="rgba(0,0,0,0.55)";
+    ctx.fillRect(0,0,1080,1920);
+
+    // Left Logo
+    if(logo.complete){
+        ctx.drawImage(logo,40,40,120,120);
+    }
+
+    // RIGHT Shivaji Logo
+    if(shivajiLogo.complete){
+        ctx.drawImage(shivajiLogo,920,40,120,120);
+    }
+
+    ctx.textAlign="center";
+
+    ctx.fillStyle="#FFD700";
+    ctx.shadowBlur=30;
+    ctx.shadowColor="#ff9933";
+    ctx.font="bold 110px 'Khand'";
+    ctx.fillText("🚩 श्रीराम नवमी 🚩",540,450);
+
+    ctx.shadowBlur=0;
+
+    ctx.fillStyle="#fff";
+    ctx.font="60px 'Khand'";
+    ctx.fillText("हार्दिक शुभेच्छा!",540,540);
+
+    // Photo circle
+    const cx=540,cy=900,r=300;
+
+    if(userImage){
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx,cy,r,0,Math.PI*2);
+        ctx.clip();
+
+        const scale=Math.max((r*2)/userImage.width,(r*2)/userImage.height);
+        const x=cx-(userImage.width*scale)/2;
+        const y=cy-(userImage.height*scale)/2;
+
+        ctx.drawImage(userImage,x,y,userImage.width*scale,userImage.height*scale);
+
+        ctx.restore();
+    }
+
+    // Border
+    ctx.strokeStyle="#FFD700";
+    ctx.lineWidth=18;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.stroke();
+
+    // Text
+    ctx.fillStyle="#fff";
+    ctx.font="bold 85px 'Khand'";
+    ctx.fillText(name,540,1300);
+
+    ctx.fillStyle="#FFD700";
+    ctx.font="45px 'Poppins'";
+    ctx.fillText(tagline,540,1380);
+
+    ctx.fillStyle="#fff";
+    ctx.font="42px 'Poppins'";
+    ctx.fillText(school,540,1460);
+
+    ctx.font="36px 'Poppins'";
+    ctx.fillText(org,540,1520);
+
+    // Footer
+    let grad=ctx.createLinearGradient(0,1600,1080,1900);
+    grad.addColorStop(0,"#ff6600");
+    grad.addColorStop(1,"#660000");
+
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,1600,1080,300);
+
+    ctx.fillStyle="#fff";
+    ctx.font="150px 'Khand'";
+    ctx.fillText("॥ जय श्रीराम ॥",540,1800);
+}
+
+// Download FIX
+function download(){
+    const tempCanvas=document.createElement("canvas");
+    tempCanvas.width=canvas.width;
+    tempCanvas.height=canvas.height;
+
+    const tctx=tempCanvas.getContext("2d");
+    tctx.drawImage(canvas,0,0);
+
+    const link=document.createElement("a");
+    link.download="RamNavami_Poster.png";
+    link.href=tempCanvas.toDataURL("image/png");
+    link.click();
+}
+
+// WhatsApp
+function share(){
+    download();
+    alert("📲 Image डाउनलोड झाली! WhatsApp वर share करा");
+}
+
+window.onload=drawPoster;
+</script>
+
+</body>
+</html>
