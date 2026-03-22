@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🚩 श्री राम नवमी - शिवनेरी विद्यालय</title>
+<title>🚩 राम नवमी पोस्टर</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Khand:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
@@ -19,54 +19,84 @@ body{
     font-family:'Poppins',sans-serif;
     background:linear-gradient(135deg,#fdfbfb,#ebedee);
     margin:0;
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+    padding:10px;
 }
 
+/* HEADER */
 h1{
+    text-align:center;
     color:var(--maroon);
     font-family:'Khand';
+    font-size:28px;
 }
 
-/* Glass UI */
+/* MOBILE FIRST */
 .container{
-    max-width:1100px;
-    width:100%;
-    display:grid;
-    grid-template-columns:1fr 1.2fr;
-    gap:30px;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter:blur(12px);
-    padding:30px;
-    border-radius:25px;
-    box-shadow:0 15px 40px rgba(0,0,0,0.2);
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+/* CARD UI */
+.card{
+    background:rgba(255,255,255,0.8);
+    backdrop-filter:blur(10px);
+    padding:15px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* INPUTS */
+label{
+    font-weight:600;
+    margin-top:10px;
+    display:block;
 }
 
 input{
     width:100%;
-    padding:14px;
+    padding:12px;
     border-radius:10px;
     border:2px solid #eee;
     margin-top:5px;
+    font-size:14px;
 }
 
+/* BUTTONS */
 button{
+    width:100%;
     padding:14px;
     border:none;
     border-radius:12px;
     font-weight:bold;
-    cursor:pointer;
-    margin-top:10px;
+    font-size:16px;
+    margin-top:12px;
 }
 
 .btn-main{background:var(--maroon);color:white;}
 .btn-whatsapp{background:#25D366;color:white;}
 
+/* CANVAS */
+.canvas-box{
+    text-align:center;
+}
+
 canvas{
+    width:100%;
+    max-width:320px;
     border-radius:15px;
-    box-shadow:0 15px 30px rgba(0,0,0,0.2);
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* DESKTOP VIEW */
+@media(min-width:900px){
+    .container{
+        flex-direction:row;
+        align-items:flex-start;
+    }
+    .card{
+        width:50%;
+    }
 }
 
 /* Crop Modal */
@@ -75,15 +105,15 @@ canvas{
     position:fixed;
     top:0;left:0;
     width:100%;height:100%;
-    background:rgba(0,0,0,0.85);
+    background:rgba(0,0,0,0.9);
     justify-content:center;
     align-items:center;
     flex-direction:column;
+    z-index:999;
 }
 
 #cropModal img{
-    max-width:300px;
-    border-radius:10px;
+    max-width:90%;
 }
 </style>
 </head>
@@ -94,7 +124,8 @@ canvas{
 
 <div class="container">
 
-<div>
+<!-- FORM -->
+<div class="card">
 
 <label>नाव</label>
 <input type="text" id="name" oninput="drawPoster()">
@@ -103,10 +134,10 @@ canvas{
 <input type="text" id="tagline" value="मी मराठी शाळेचा विद्यार्थी" oninput="drawPoster()">
 
 <label>शाळा</label>
-<input type="text" id="school" value="शिवनेरी विद्यालय धोलवड, ता.जुन्नर, जि.पुणे" oninput="drawPoster()">
+<input type="text" id="school" value="शिवनेरी विद्यालय धोलवड, ता.जुन्नर" oninput="drawPoster()">
 
 <label>संस्था</label>
-<input type="text" id="org" value="ग्रामशिक्षण सेवा मंडळ, धोलवड" oninput="drawPoster()">
+<input type="text" id="org" value="ग्रामशिक्षण सेवा मंडळ" oninput="drawPoster()">
 
 <label>फोटो</label>
 <input type="file" id="photo">
@@ -116,8 +147,9 @@ canvas{
 
 </div>
 
-<div>
-<canvas id="canvas" width="1080" height="1920" style="width:350px"></canvas>
+<!-- PREVIEW -->
+<div class="card canvas-box">
+<canvas id="canvas" width="1080" height="1920"></canvas>
 </div>
 
 </div>
@@ -125,7 +157,7 @@ canvas{
 <!-- Cropper -->
 <div id="cropModal">
 <img id="cropImg">
-<br>
+<br><br>
 <button onclick="cropImage()">Use Photo</button>
 </div>
 
@@ -141,20 +173,18 @@ let userImage=null;
 // Background
 const bg=new Image();
 bg.crossOrigin="anonymous";
-bg.src="ram.png"; // keep your local image or URL
+bg.src="ram.png";
 bg.onload=drawPoster;
 
-// Left Logo
+// Logos
 const logo=new Image();
-logo.crossOrigin="anonymous";
 logo.src="school.jpg";
 
-// RIGHT Shivaji Logo
 const shivajiLogo=new Image();
 shivajiLogo.crossOrigin="anonymous";
 shivajiLogo.src="https://coreldrawdesign.com/resources/previews/preview-shivaji-maharaj-png-with-fort-and-flag-background-1739789498.webp";
 
-// Upload + Crop
+// Crop
 document.getElementById("photo").addEventListener("change",(e)=>{
     const reader=new FileReader();
     reader.onload=(event)=>{
@@ -195,12 +225,10 @@ function drawPoster(){
     ctx.fillStyle="rgba(0,0,0,0.55)";
     ctx.fillRect(0,0,1080,1920);
 
-    // Left Logo
+    // logos
     if(logo.complete){
         ctx.drawImage(logo,40,40,120,120);
     }
-
-    // RIGHT Shivaji Logo
     if(shivajiLogo.complete){
         ctx.drawImage(shivajiLogo,920,40,120,120);
     }
@@ -208,18 +236,14 @@ function drawPoster(){
     ctx.textAlign="center";
 
     ctx.fillStyle="#FFD700";
-    ctx.shadowBlur=30;
-    ctx.shadowColor="#ff9933";
     ctx.font="bold 110px 'Khand'";
     ctx.fillText("🚩 श्रीराम नवमी 🚩",540,450);
-
-    ctx.shadowBlur=0;
 
     ctx.fillStyle="#fff";
     ctx.font="60px 'Khand'";
     ctx.fillText("हार्दिक शुभेच्छा!",540,540);
 
-    // Photo circle
+    // photo
     const cx=540,cy=900,r=300;
 
     if(userImage){
@@ -233,18 +257,16 @@ function drawPoster(){
         const y=cy-(userImage.height*scale)/2;
 
         ctx.drawImage(userImage,x,y,userImage.width*scale,userImage.height*scale);
-
         ctx.restore();
     }
 
-    // Border
     ctx.strokeStyle="#FFD700";
     ctx.lineWidth=18;
     ctx.beginPath();
     ctx.arc(cx,cy,r,0,Math.PI*2);
     ctx.stroke();
 
-    // Text
+    // text
     ctx.fillStyle="#fff";
     ctx.font="bold 85px 'Khand'";
     ctx.fillText(name,540,1300);
@@ -260,7 +282,7 @@ function drawPoster(){
     ctx.font="36px 'Poppins'";
     ctx.fillText(org,540,1520);
 
-    // Footer
+    // footer
     let grad=ctx.createLinearGradient(0,1600,1080,1900);
     grad.addColorStop(0,"#ff6600");
     grad.addColorStop(1,"#660000");
@@ -269,29 +291,22 @@ function drawPoster(){
     ctx.fillRect(0,1600,1080,300);
 
     ctx.fillStyle="#fff";
-    ctx.font="150px 'Khand'";
-    ctx.fillText("॥ जय श्रीराम ॥",540,1800);
+    ctx.font="90px 'Khand'";
+    ctx.fillText("॥ जय श्रीराम ॥",540,1780);
 }
 
-// Download FIX
+// download FIX
 function download(){
-    const tempCanvas=document.createElement("canvas");
-    tempCanvas.width=canvas.width;
-    tempCanvas.height=canvas.height;
-
-    const tctx=tempCanvas.getContext("2d");
-    tctx.drawImage(canvas,0,0);
-
     const link=document.createElement("a");
-    link.download="RamNavami_Poster.png";
-    link.href=tempCanvas.toDataURL("image/png");
+    link.download="RamNavami.png";
+    link.href=canvas.toDataURL("image/png");
     link.click();
 }
 
-// WhatsApp
+// share
 function share(){
     download();
-    alert("📲 Image डाउनलोड झाली! WhatsApp वर share करा");
+    alert("Image डाउनलोड झाली! WhatsApp वर share करा 🚀");
 }
 
 window.onload=drawPoster;
